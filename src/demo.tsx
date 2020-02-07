@@ -27,16 +27,14 @@ const SimpleMenu: React.FC = () => {
   // Calculate open state based on mouse location
 
   const open = mouseOverButton || mouseOverMenu;
-  const handleClick = event => {
-    setanchorEl(event.currentTarget);
-  };
 
   const handleClose = () => {
     setmouseOverButton(false);
     setmouseOverMenu(false);
   };
 
-  const enterButton = () => {
+  const enterButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setanchorEl(event.currentTarget);
     setmouseOverButton(true);
   };
 
@@ -70,9 +68,17 @@ const SimpleMenu: React.FC = () => {
       </Button>
       <Menu
         id="simple-menu"
-        anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        anchorEl={anchorEl}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center"
+        }}
         MenuListProps={{
           onMouseEnter: enterMenu,
           onMouseLeave: leaveMenu
@@ -80,6 +86,7 @@ const SimpleMenu: React.FC = () => {
         classes={{
           paper: classes.paper
         }}
+        getContentAnchorEl={null}
       >
         <MenuItem onClick={handleClose}>Alla kläder</MenuItem>
         <MenuItem onClick={handleClose}>Bestsellers</MenuItem>
