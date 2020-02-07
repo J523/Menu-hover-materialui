@@ -2,8 +2,8 @@ import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import React from "react";
-const timeoutLength = 300;
+import React, { useState } from "react";
+const timeoutLength = 400;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -11,87 +11,84 @@ const useStyles = makeStyles((theme: Theme) =>
       pointerEvents: "none"
     },
     paper: {
-      padding: theme.spacing(3)
+      padding: theme.spacing(1)
     }
   })
 );
 
-class SimpleMenu extends React.Component {
-  state = {
-    anchorEl: null,
+const SimpleMenu: React.FC = () => {
+  const [anchorEl, setanchorEl] = useState<
+    Element | ((element: Element) => Element)
+  >(null);
+  const [mouseOverButton, setmouseOverButton] = useState(false);
+  const [mouseOverMenu, setmouseOverMenu] = useState(false);
+  const classes = useStyles();
 
-    // Keep track of whether the mouse is over the button or menu
-    mouseOverButton: false,
-    mouseOverMenu: false
+  // Calculate open state based on mouse location
+
+  const open = mouseOverButton || mouseOverMenu;
+  const handleClick = event => {
+    setanchorEl(event.currentTarget);
   };
 
-  handleClick = event => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
+  const handleClose = () => {
+    setmouseOverButton(false);
+    setmouseOverMenu(false);
   };
 
-  handleClose = () => {
-    this.setState({ mouseOverButton: false, mouseOverMenu: false });
+  const enterButton = () => {
+    setmouseOverButton(true);
   };
 
-  enterButton = () => {
-    this.setState({ mouseOverButton: true });
-  };
-
-  leaveButton = () => {
+  const leaveButton = () => {
     // Set a timeout so that the menu doesn't close before the user has time to
     // move their mouse over it
     setTimeout(() => {
-      this.setState({ mouseOverButton: false });
+      setmouseOverButton(false);
     }, timeoutLength);
   };
 
-  enterMenu = () => {
-    this.setState({ mouseOverMenu: true });
+  const enterMenu = () => {
+    setmouseOverMenu(true);
   };
 
-  leaveMenu = () => {
+  const leaveMenu = () => {
     setTimeout(() => {
-      this.setState({ mouseOverMenu: false });
+      setmouseOverMenu(false);
     }, timeoutLength);
   };
 
-  render() {
-    // Calculate open state based on mouse location
-    const open = this.state.mouseOverButton || this.state.mouseOverMenu;
-
-    const classes = useStyles();
-
-    return (
-      <div>
-        <Button
-          aria-owns={open ? "simple-menu" : ""}
-          aria-haspopup="true"
-          onClick={this.handleClick}
-          onMouseEnter={this.enterButton}
-          onMouseLeave={this.leaveButton}
-        >
-          Open Menu
-        </Button>
-        <Menu
-          id="simple-menu"
-          anchorEl={this.state.anchorEl}
-          open={open}
-          onClose={this.handleClose}
-          MenuListProps={{
-            onMouseEnter: this.enterMenu,
-            onMouseLeave: this.leaveMenu
-          }}
-          classes={{
-            paper: classes.paper
-          }}
-        >
-          <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-          <MenuItem onClick={this.handleClose}>My account</MenuItem>
-          <MenuItem onClick={this.handleClose}>Logout</MenuItem>
-        </Menu>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <Button
+        aria-owns={open ? "simple-menu" : ""}
+        aria-haspopup="true"
+        onMouseEnter={enterButton}
+        onMouseLeave={leaveButton}
+      >
+        Kläder
+      </Button>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          onMouseEnter: enterMenu,
+          onMouseLeave: leaveMenu
+        }}
+        classes={{
+          paper: classes.paper
+        }}
+      >
+        <MenuItem onClick={handleClose}>Alla kläder</MenuItem>
+        <MenuItem onClick={handleClose}>Bestsellers</MenuItem>
+        <MenuItem onClick={handleClose}>Jackor</MenuItem>
+        <MenuItem onClick={handleClose}>Tröjor & koftor</MenuItem>
+        <MenuItem onClick={handleClose}>Toppar & blusar</MenuItem>
+      </Menu>
+    </div>
+  );
+};
 
 export default SimpleMenu;
